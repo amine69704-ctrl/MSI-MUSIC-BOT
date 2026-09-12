@@ -1,0 +1,35 @@
+name: Deploy MSI Music Bot
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Create Release Zip Artifact
+        run: |
+          zip -r bot-release.zip . -x "*.git*" "*.github*"
+
+      - name: Upload Bot Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: msi-music-bot-build
+          path: bot-release.zip
+          
